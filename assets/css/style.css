@@ -1,4 +1,5 @@
 body {
+    height: 100vh;
     font-family: 'Courier New', Courier, monospace;
     margin: 0;
     padding: 0;
@@ -119,4 +120,19 @@ body {
     left: 0;
     transform: none;
     border-radius: 0;
+}
+footer {
+    background-color: green;
+    position: absolute;
+    bottom:0%;
+    width: 100%;
+}
+
+.github {
+    text-align: center;
+}
+
+.github a {
+    color: #ffffff;
+    text-decoration: none;
 }
