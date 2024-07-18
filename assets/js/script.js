@@ -7,64 +7,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const lightThemeBtn = document.getElementById("light-theme-btn");
     const output = document.getElementById("output");
 
-    let currentTheme = "dark"; // Inicializa com o tema dark
+    let currentTheme = "dark"; // Initialize with the dark theme
     let isMaximized = false;
     let isMinimized = false;
 
-    const emailList = `
-        fabiomezzomo.dev@gmail.com
-    `;
-
-    const skillsList = `
-        Here are my skills:
-        - PHP
-        - JavaScript
-        - HTML & CSS
-        - Laravel
-        - VueJs
-        - WordPress Development
-        - MySQL
-        - RESTful APIs
-        - Git & GitHub
-    `;
-
-    const languagesList = `
-        Here are the languages I speak:
-        - Portuguese (native)
-        - English (fluent)
-    `;
-
-    const jobsList = `
-        Here are some of my previous jobs:
-        - WordPress Developer at Awesome Motive - West Palm Beach/US (Remote) [Sep 2023 — Jun 2024]
-        - Software Engineer at Builderall - Orlando/US (Remote) [Nov 2021 — Sep 2023]
-        - Developer Freelance - [Mar 2019 — Nov 2021]
-        - Project Manager at Due Studio - Serafina Corrêa/Brazil [Apr 2009 — Mar 2019]
-        - Full Stack Developer at W3 Informática - Caxias do Sul/Brazil [Apr 2005 — Dec 2007]
-    `;
-
-    const educationList = `
-        Bachelor’s degree in Computer Science [2003 - 2009]
-    `;
+    let commandData = {};
+    let availableCommands = [];
 
     const commands = {
-        help: () => "Available commands: help, list [email, skills, languages, jobs, education], clear, theme [dark, light]",
+        help: () => `Available commands: ${availableCommands.join(", ")}, clear, theme [dark, light]`,
         clear: () => { print('', true); return ""; },
         list: (args) => {
             const category = args[0];
-            switch (category) {
-                case "email":
-                    return emailList;
-                case "education":
-                    return educationList;
-                case "skills":
-                    return skillsList;
-                case "languages":
-                    return languagesList;
-                case "jobs":
-                    return jobsList;
-                default:
-                    return "Invalid list command. Use 'list email', 'list skills', 'list languages', 'list jobs', or 'list education'.";
+            if (commandData.hasOwnProperty(category)) {
+                return formatList(commandData[category]);
+            } else {
+                return "Invalid list command. Use 'list email', 'list skills', 'list languages', 'list jobs', or 'list education'.";
             }
         },
         theme: (args) => {
@@ -90,6 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    function formatList(data) {
+        if (Array.isArray(data)) {
+            return '- ' + data.join('\n- ');
+        }
+        return data;
+    }
+
     function applyDarkTheme() {
         terminal.style.backgroundColor = "#2b2b2b";
         terminal.style.color = "#d4d4d4"; // Text color for dark theme
@@ -102,25 +67,40 @@ document.addEventListener("DOMContentLoaded", () => {
         currentTheme = "light";
     }
 
-    // Inicializa com o tema dark e texto claro
+    // Initialize with the dark theme and light text
     applyDarkTheme();
 
-    // Função para executar o comando help ao iniciar
+    // Function to execute the help command on startup
     function showHelp() {
         const result = commands.help();
-        print( `${result}\n` );
+        print(`${result}\n`);
     }
 
-    function print( content, clear = false ) {
-        if ( clear ) {
+    function print(content, clear = false) {
+        if (clear) {
             output.innerHTML = `${content}\n`;
         } else {
             output.innerHTML += `${content}\n`;
         }
     }
 
-    // Executa o comando help ao iniciar
-    showHelp();
+    // Function to load data from the JSON file
+    function loadCommandData() {
+        fetch('data/data.json')
+            .then(response => response.json())
+            .then(data => {
+                commandData = data;
+                availableCommands = Object.keys(commandData).map(cmd => `list ${cmd}`);
+                // Execute the help command on startup after loading the data
+                showHelp();
+            })
+            .catch(error => {
+                console.error("Failed to load command data:", error);
+                print("Failed to load command data.\n", true);
+            });
+    }
+
+    loadCommandData();
 
     closeBtn.addEventListener("click", () => {
         terminal.style.display = "none";
@@ -169,9 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (commands.hasOwnProperty(command) && typeof commands[command] === "function") {
                 const result = commands[command](args);
-                print( `> ${inputValue}\n${result}\n` );
+                print(`> ${inputValue}\n${result}\n`);
             } else {
-                print( `> ${inputValue}\nCommand not found: ${command}\n` );
+                print(`> ${inputValue}\nCommand not found: ${command}\n`);
             }
 
             input.value = "";
