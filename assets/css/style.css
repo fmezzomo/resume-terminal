@@ -121,10 +121,11 @@ body {
     transform: none;
     border-radius: 0;
 }
+
 footer {
     background-color: green;
     position: absolute;
-    bottom:0%;
+    bottom: 0;
     width: 100%;
 }
 
@@ -135,4 +136,14 @@ footer {
 .github a {
     color: #ffffff;
     text-decoration: none;
+}
+
+body.dark-theme #terminal {
+    background-color: #2b2b2b;
+    color: #d4d4d4;
+}
+
+body.light-theme #terminal {
+    background-color: #ffffff;
+    color: #000000;
 }
