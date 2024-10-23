@@ -30,14 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
             switch (theme) {
                 case "dark":
                     if (currentTheme !== "dark") {
-                        applyDarkTheme();
+                        applyTheme("dark");
                         return "Switched to Dark Theme.";
                     } else {
                         return "Already using Dark Theme.";
                     }
                 case "light":
                     if (currentTheme !== "light") {
-                        applyLightTheme();
+                        applyTheme("light");
                         return "Switched to Light Theme.";
                     } else {
                         return "Already using Light Theme.";
@@ -55,22 +55,15 @@ document.addEventListener("DOMContentLoaded", () => {
         return data;
     }
 
-    function applyDarkTheme() {
-        terminal.style.backgroundColor = "#2b2b2b";
-        terminal.style.color = "#d4d4d4"; // Text color for dark theme
-        currentTheme = "dark";
+    function applyTheme(theme) {
+        document.body.classList.remove('dark-theme', 'light-theme');
+        document.body.classList.add(`${theme}-theme`);
+        currentTheme = theme;
     }
 
-    function applyLightTheme() {
-        terminal.style.backgroundColor = "#ffffff";
-        terminal.style.color = "#000000"; // Text color for light theme
-        currentTheme = "light";
-    }
+    // Initialize with the dark theme
+    applyTheme("dark");
 
-    // Initialize with the dark theme and light text
-    applyDarkTheme();
-
-    // Function to execute the help command on startup
     function showHelp() {
         const result = commands.help();
         print(`${result}\n`);
@@ -84,20 +77,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Function to load data from the JSON file
     function loadCommandData() {
         fetch('data/data.json')
             .then(response => response.json())
             .then(data => {
                 commandData = data;
                 availableCommands = Object.keys(commandData).map(cmd => `list ${cmd}`);
-                // Execute the help command on startup after loading the data
                 showHelp();
             })
-            .catch(error => {
-                console.error("Failed to load command data:", error);
-                print("Failed to load command data.\n", true);
-            });
+            .catch(error => console.error('Error loading command data:', error));
     }
 
     loadCommandData();
@@ -130,13 +118,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     darkThemeBtn.addEventListener("click", () => {
         if (currentTheme !== "dark") {
-            applyDarkTheme();
+            applyTheme("dark");
         }
     });
 
     lightThemeBtn.addEventListener("click", () => {
         if (currentTheme !== "light") {
-            applyLightTheme();
+            applyTheme("light");
         }
     });
 
